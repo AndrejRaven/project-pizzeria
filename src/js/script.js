@@ -392,6 +392,12 @@
         }
       } else {
         thisCart.totalPrice = subtotalPrice;
+        thisCart.dom.deliveryFee.innerHTML = 0;
+        thisCart.dom.subtotalPrice.innerHTML = subtotalPrice;
+        thisCart.dom.totalNumber.innerHTML = totalNumber;
+        for (let totalPriceElem of thisCart.dom.totalPrice) {
+          totalPriceElem.innerHTML = thisCart.totalPrice;
+        }
       }
     }
     remove(cartProduct) {
