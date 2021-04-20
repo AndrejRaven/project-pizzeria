@@ -354,9 +354,9 @@
       thisCart.dom.productList.addEventListener('updated', function () {
         thisCart.update();
       });
-      thisCart.dom.productList.addEventListener('remove', function(event) { thisCart.remove(event.detail.thisCart);
-      });
+      thisCart.dom.productList.addEventListener('remove', (event) => thisCart.remove(event.detail.cartProduct));
     }
+
     add(menuProduct) {
       const thisCart = this;
 
@@ -394,11 +394,12 @@
         thisCart.totalPrice = subtotalPrice;
       }
     }
-    remove(element) {
+    remove(cartProduct) {
+      console.log(cartProduct);
       const thisCart = this;
-      const removeIndex = thisCart.products.indexOf(element);
+      const removeIndex = thisCart.products.indexOf(cartProduct);
       thisCart.products.splice(removeIndex, 1);
-      element.dom.wrapper.remove();
+      cartProduct.dom.wrapper.remove();
       thisCart.update();
     }
   }
@@ -439,6 +440,17 @@
         thisCartProduct.dom.price.innerHTML = thisCartProduct.price;
       });
     }
+    initActions() {
+      const thisCartProduct = this;
+
+      thisCartProduct.dom.edit.addEventListener('click', function (event) {
+        event.preventDefault();
+      });
+      thisCartProduct.dom.remove.addEventListener('click', function (event) {
+        event.preventDefault();
+        thisCartProduct.remove();
+      });
+    }
     remove() {
       const thisCartProduct = this;
 
@@ -450,18 +462,6 @@
       });
 
       thisCartProduct.dom.wrapper.dispatchEvent(event);
-      console.log('remove product');
-    }
-    initActions() {
-      const thisCartProduct = this;
-
-      thisCartProduct.dom.edit.addEventListener('click', function (event) {
-        event.preventDefault();
-      });
-      thisCartProduct.dom.remove.addEventListener('click', function (event) {
-        event.preventDefault();
-        thisCartProduct.remove();
-      });
     }
   }
   const app = {
