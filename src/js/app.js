@@ -48,7 +48,7 @@ const app = {
     console.log('templates:', templates);
 
     thisApp.initData();
-    thisApp.initMenu();
+    // thisApp.initMenu();
     thisApp.initCart();
   },
 };
