@@ -17,11 +17,8 @@ class Booking {
     thisBooking.dom.wrapper = document.querySelector(select.containerOf.booking);
     
     thisBooking.dom.wrapper.innerHTML = generatedHTML;
-    console.log(generatedHTML);
     thisBooking.dom.peopleAmmount = thisBooking.dom.wrapper.querySelector(select.booking.peopleAmount);
     thisBooking.dom.hoursAmount = thisBooking.dom.wrapper.querySelector(select.booking.hoursAmount);
-    console.log(thisBooking.dom.peopleAmmount);
-    console.log(thisBooking.dom.hoursAmount);
   }
   initWidget() {
     const thisBooking = this;
