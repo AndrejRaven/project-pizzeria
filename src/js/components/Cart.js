@@ -23,6 +23,11 @@ class Cart {
     thisCart.dom.deliveryFee = thisCart.dom.wrapper.querySelector(select.cart.deliveryFee);
     thisCart.dom.subtotalPrice = thisCart.dom.wrapper.querySelector(select.cart.subtotalPrice);
     thisCart.dom.totalNumber = thisCart.dom.wrapper.querySelector(select.cart.totalNumber);
+    thisCart.dom.form = thisCart.dom.wrapper.querySelector(select.cart.form);
+    thisCart.dom.address = thisCart.dom.wrapper.querySelector(
+      select.cart.address
+    );
+    thisCart.dom.phone = thisCart.dom.wrapper.querySelector(select.cart.phone);
     thisCart.dom.totalPrice = thisCart.dom.wrapper.querySelectorAll(select.cart.totalPrice);
   }
   initActions() {
@@ -36,6 +41,10 @@ class Cart {
       thisCart.update();
     });
     thisCart.dom.productList.addEventListener('remove', (event) => thisCart.remove(event.detail.cartProduct));
+    thisCart.dom.form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      thisCart.sendOrder();
+    });
   }
   
   add(menuProduct) {
@@ -49,7 +58,7 @@ class Cart {
     thisCart.dom.productList.appendChild(generatedDOM);
   
     thisCart.products.push(new CartProduct(menuProduct, generatedDOM));
-    console.log(thisCart.products);
+    console.log('products',thisCart.products);
     thisCart.update();
   }
   update() {
@@ -81,6 +90,7 @@ class Cart {
       }
     }
   }
+
   remove(cartProduct) {
     console.log(cartProduct);
     const thisCart = this;
@@ -88,6 +98,40 @@ class Cart {
     thisCart.products.splice(removeIndex, 1);
     cartProduct.dom.wrapper.remove();
     thisCart.update();
+  }
+
+  sendOrder() {
+    const thisCart = this;
+    const url = settings.db.url + '/' + settings.db.order;
+    //console.log('url:',url);
+
+    const payload = {
+      address: thisCart.dom.address.value,
+      phone: thisCart.dom.phone.value,
+      totalPrice: thisCart.totalPrice,
+      subTotalPrice: thisCart.subTotalPrice,
+      totalNumber: thisCart.totalNumber,
+      deliveryFee: thisCart.deliveryFee,
+      products: [],
+    };
+
+    for (let product of thisCart.products) {
+      payload.products.push(product.getData());
+    }
+    //console.log('payload:',payload);
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    fetch(url, options)
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   }
 }
 

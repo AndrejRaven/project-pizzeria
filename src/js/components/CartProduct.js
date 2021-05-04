@@ -57,8 +57,23 @@ class CartProduct {
         cartProduct: thisCartProduct,
       },
     });
+
+    
   
     thisCartProduct.dom.wrapper.dispatchEvent(event);
+  }
+
+  getData() {
+    const thisCartProduct = this;
+
+    return {
+      id: thisCartProduct.id,
+      amount: thisCartProduct.amount,
+      price: thisCartProduct.price,
+      priceSingle: thisCartProduct.priceSingle,
+      name: thisCartProduct.name,
+      params: thisCartProduct.params,
+    };
   }
 }
 
