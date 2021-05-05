@@ -48,9 +48,16 @@ class Booking {
     thisBooking.dom.form.addEventListener('submit', function (event) {
       event.preventDefault();
       thisBooking.sendBooking();
+
     });
     thisBooking.dom.tablesWrapper.addEventListener('click', function(event) {
+      if(thisBooking.active == true) {
+        thisBooking.removeSelected();
+        thisBooking.selectedTable = null;
+        thisBooking.active = false;
+      } else {
       thisBooking.initTables(event);
+      }
     });
   }
 
@@ -75,6 +82,7 @@ class Booking {
         ){
           clickedElement.classList.add(classNames.booking.tableSelected);
           thisBooking.selectedTable = tableId;
+          thisBooking.active = true;
         } else {
           thisBooking.selectedTable = null;
           clickedElement.classList.remove(classNames.booking.tableSelected);
