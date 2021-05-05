@@ -206,7 +206,7 @@
     "event": [
       {
         "id": 1,
-        "date": "2021-05-04",
+        "date": "2021-05-06",
         "hour": "12:30",
         "table": 1,
         "repeat": false,
@@ -258,13 +258,13 @@
     "booking": [
       {
         "id": 1,
-        "date": "2021-05-04",
+        "date": "2021-05-05",
         "hour": "20:00",
         "table": 3,
         "duration": 3,
         "ppl": 4,
         "starters": [
-          "water"
+          "lemonWater"
         ]
       }
     ]
