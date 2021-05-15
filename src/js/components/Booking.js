@@ -237,7 +237,6 @@ class Booking {
       table: thisBooking.selectedTable,
       ppl: parseInt(thisBooking.peopleAmount.value),
       duration: parseInt(thisBooking.hoursAmount.value),
-      hoursAmount: thisBooking.hoursAmount.value,
       starters: [],
       address: thisBooking.dom.address.value,
       phone: thisBooking.dom.phone.value,
