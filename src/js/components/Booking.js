@@ -11,7 +11,7 @@ class Booking {
     thisBooking.render(element);
     thisBooking.initWidget();
     thisBooking.getData();
-    thisBooking.selectedTable = null;
+    thisBooking.initTables();
   }
 
   render(element) {
@@ -32,6 +32,8 @@ class Booking {
     thisBooking.dom.tablesWrapper = thisBooking.dom.wrapper.querySelector(select.containerOf.tables);
     thisBooking.dom.form = thisBooking.dom.wrapper.querySelector(select.booking.form);
     thisBooking.dom.starters = thisBooking.dom.wrapper.querySelectorAll(select.booking.starters);
+    thisBooking.dom.address = thisBooking.dom.wrapper.querySelector(select.cart.address);
+    thisBooking.dom.phone = thisBooking.dom.wrapper.querySelector(select.cart.phone);
   }
 
   initWidget() {
@@ -44,56 +46,37 @@ class Booking {
 
     thisBooking.dom.wrapper.addEventListener('updated', function() {
       thisBooking.updateDOM();
-      thisBooking.removeSelected();
     });
     thisBooking.dom.form.addEventListener('submit', function (event) {
       event.preventDefault();
       thisBooking.sendBooking();
-      thisBooking.updateDOM();
-    });
-    thisBooking.dom.tablesWrapper.addEventListener('click', function(event) {
-      const clickedTable = event.target.getAttribute('data-table');
-      
-      if(clickedTable != thisBooking.selectedTable) {
-        thisBooking.initTables(event);
-        thisBooking.tableBooked = clickedTable;
-      } else {
-        thisBooking.removeSelected();
-      }
     });
   }
 
-  initTables(event) {
+  initTables() {
     const thisBooking = this;
 
-    const clickedElement = event.target;
-    const tableId = clickedElement.getAttribute('data-table');
+    for (let table of thisBooking.dom.tables) {
 
-    if(tableId) {
-      if(!clickedElement.classList.contains(classNames.booking.tableBooked)) {
-        thisBooking.selectedTable = tableId;
-      } else {
-        alert('this table is reserved');
-      }
+      table.addEventListener('click', function (event) {
+        event.preventDefault();
 
-      for(let table of thisBooking.dom.tables) {
-        table.classList.remove(classNames.booking.tableSelected);
-        if(
-          clickedElement.classList.contains('table') &&
-          thisBooking.selectedTable == tableId 
-        ){
-          clickedElement.classList.add(classNames.booking.tableSelected);
-          thisBooking.selectedTable = tableId;
-          thisBooking.active = true;
+        if (table.classList.contains('booked')) { 
+          alert('not available');
         } else {
-          thisBooking.selectedTable = null;
-          clickedElement.classList.remove(classNames.booking.tableSelected);
+          const tableNumber = parseInt(table.getAttribute(settings.booking.tableIdAttribute));
+          const selected = thisBooking.selectedTable === tableNumber;
+
+          thisBooking.removeSelected();
+
+          if (!selected){
+            table.classList.add(classNames.booking.tableSelected);
+            thisBooking.selectedTable = tableNumber;
+          }
         }
-
-      }
+      });
     }
-
-  }
+  }  
 
   removeSelected() {
     const thisBooking = this;
@@ -104,7 +87,7 @@ class Booking {
       selected.classList.remove(classNames.booking.tableSelected);
     }
 
-    thisBooking.selectedTable = null;
+    delete  thisBooking.selectedTable;
   }
 
   getData() {
@@ -159,6 +142,7 @@ class Booking {
       })
       .then(function([bookings, eventsCurrent, eventsRepeat]){
         thisBooking.parseData(bookings, eventsCurrent, eventsRepeat);
+        console.log(bookings);
       });
   }
 
@@ -166,10 +150,12 @@ class Booking {
     const thisBooking = this;
     
     for(let item of eventsCurrent) {
+      console.log(item);
       thisBooking.makeBooked(item.date, item.hour, item.duration, item.table);
     }
 
     for(let item of bookings) {
+      console.log(item);
       thisBooking.makeBooked(item.date, item.hour, item.duration, item.table);
     }
 
@@ -178,6 +164,7 @@ class Booking {
 
     for(let item of eventsRepeat) {
       if(item.repeat == 'daily'){
+        console.log(item);
         for(let loopDate = minDate; loopDate <= maxDate; loopDate = utils.addDays(loopDate, 1)) {
           thisBooking.makeBooked(utils.dateToStr(loopDate), item.hour, item.duration, item.table);
         }
@@ -202,8 +189,6 @@ class Booking {
       }
       
       thisBooking.booked[date][hourBlock].push(table);
-      thisBooking.bookedTables = thisBooking.booked;
-      thisBooking.updateDOM();
     }
   }
 
@@ -212,7 +197,6 @@ class Booking {
 
     thisBooking.date = thisBooking.datePicker.value;
     thisBooking.hour = utils.hourToNumber(thisBooking.hourPicker.value);
-    console.log(thisBooking.hour);
     let allAvailable = false;
 
     if(
@@ -235,7 +219,6 @@ class Booking {
         thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableId)
       ){
         table.classList.add(classNames.booking.tableBooked);
-        console.log('tableReserved', thisBooking.booked[thisBooking.date][thisBooking.hour]);
       } else {
         table.classList.remove(classNames.booking.tableBooked); 
       }
@@ -251,10 +234,13 @@ class Booking {
     const booking = {
       date: thisBooking.datePicker.value,
       hour: thisBooking.hourPicker.value,
-      duration: thisBooking.hoursAmount.value,
-      ppl: thisBooking.peopleAmount.value,
-      table: thisBooking.tableBooked,
+      table: thisBooking.selectedTable,
+      ppl: parseInt(thisBooking.peopleAmount.value),
+      duration: parseInt(thisBooking.hoursAmount.value),
+      hoursAmount: thisBooking.hoursAmount.value,
       starters: [],
+      address: thisBooking.dom.address.value,
+      phone: thisBooking.dom.phone.value,
     };
     console.log(booking);
     for (let starter of thisBooking.dom.starters) {
@@ -276,10 +262,10 @@ class Booking {
         return response.json();
       })
       .then(function (parsedResponse) {
+        thisBooking.makeBooked(parsedResponse.date, parsedResponse.hour, parsedResponse.duration, parsedResponse.table);
+        thisBooking.updateDOM();
+        thisBooking.removeSelected();
         console.log('parsedResponse', parsedResponse);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
       });
   }
 
