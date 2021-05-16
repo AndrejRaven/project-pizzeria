@@ -142,7 +142,6 @@ class Booking {
       })
       .then(function([bookings, eventsCurrent, eventsRepeat]){
         thisBooking.parseData(bookings, eventsCurrent, eventsRepeat);
-        console.log(bookings);
       });
   }
 
@@ -150,12 +149,10 @@ class Booking {
     const thisBooking = this;
     
     for(let item of eventsCurrent) {
-      console.log(item);
       thisBooking.makeBooked(item.date, item.hour, item.duration, item.table);
     }
 
     for(let item of bookings) {
-      console.log(item);
       thisBooking.makeBooked(item.date, item.hour, item.duration, item.table);
     }
 
@@ -164,7 +161,6 @@ class Booking {
 
     for(let item of eventsRepeat) {
       if(item.repeat == 'daily'){
-        console.log(item);
         for(let loopDate = minDate; loopDate <= maxDate; loopDate = utils.addDays(loopDate, 1)) {
           thisBooking.makeBooked(utils.dateToStr(loopDate), item.hour, item.duration, item.table);
         }
